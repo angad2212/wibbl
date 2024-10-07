@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-//chat model
 const messageSchema = new mongoose.Schema(
   {
     sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
