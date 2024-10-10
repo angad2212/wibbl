@@ -5,17 +5,26 @@ import Chat from './Pages/Chat'
 
 function App() {
   return (
-    <div className="App">
-<BrowserRouter>
+    <div
+      className="App"
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        backgroundImage: "url('/download.jpeg')", // Using the correct path
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/chats" element={<Chat />} />
-
         </Routes>
-        </BrowserRouter>
+      </BrowserRouter>
     </div>
-  )
+  );
 }
+
 
 export default App
 

@@ -2,9 +2,12 @@ const express = require('express');
 const dotenv = require('dotenv');
 const chats = require('./data/data');
 const cors = require("cors");
+const connectDB = require('./config/db')
 
 // Load environment variables from .env file
 dotenv.config();
+
+connectDB();
 
 const PORT = process.env.PORT || 3001; // Set a default port if process.env.PORT is not set
 
