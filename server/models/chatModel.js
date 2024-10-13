@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+//model
 const chatModel = new mongoose.Schema(
   {
     chatName: { type: String, trim: true },
