@@ -8,7 +8,7 @@ const Signup = () => {
     const handleClick = () => setShow(!show);
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-    const [confirmpassword, setConfirmpassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [password, setPassword] = useState("");
     const [pic, setPic] = useState("");
 
@@ -16,8 +16,19 @@ const Signup = () => {
 
     }
 
-    const submitHandler = ()=>{
+    const submitHandler = async ()=>{
+      if(!name || !email || !password || !confirmPassword){
+        toast({
 
+        });
+        return;
+      }
+      if(password!=confirmPassword){
+        Toast({
+
+        });
+        return;
+      }
     }
 
     return (
@@ -57,7 +68,7 @@ const Signup = () => {
           <Input
             type={show ? "text" : "password"}
             placeholder="Confirm password"
-            onChange={(e) => setConfirmpassword(e.target.value)}
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
             <Button h="1.75rem" size="sm" onClick={handleClick}>
