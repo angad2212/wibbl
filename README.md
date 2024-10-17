@@ -1,7 +1,7 @@
 # Wibbl
 
 ## Description
-Wibbl is a [type of application (you can specify if it's for collaboration, content sharing, etc.)] that simplifies [insert functionality like communication, file sharing, etc.]. The platform is designed with a minimalistic interface for ease of use and aims to improve productivity and user experience by offering [specific features or capabilities].
+Wibbl is a [type of application] that simplifies [insert functionality like communication, file sharing, etc.]. The platform is designed with a minimalistic interface for ease of use and aims to improve productivity and user experience by offering [specific features or capabilities].
 
 ## Features
 - **User Authentication:** Secure user login and registration system.
