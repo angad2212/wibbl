@@ -8,9 +8,7 @@ Wibbl is a [type of application (you can specify if it's for collaboration, cont
 - **Real-Time Updates:** Instant notifications and updates for better collaboration.
 - **File Management:** Upload, organize, and share files with ease.
 - **User-Friendly Interface:** Clean and intuitive design to enhance user experience.
-- **Mobile Friendly:** Fully responsive design to support mobile and tablet users.
-- **Customizable Dashboards:** Tailor the interface to fit personal or team preferences.
-
+  
 ## Technologies Used
 - **Frontend:** React.js, Tailwind CSS for a clean and responsive UI.
 - **Backend:** Node.js, Express.js for robust and scalable server management.
