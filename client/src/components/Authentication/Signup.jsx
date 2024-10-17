@@ -17,18 +17,7 @@ const Signup = () => {
     }
 
     const submitHandler = async ()=>{
-      if(!name || !email || !password || !confirmPassword){
-        toast({
-
-        });
-        return;
-      }
-      if(password!=confirmPassword){
-        Toast({
-
-        });
-        return;
-      }
+      
     }
 
     return (
