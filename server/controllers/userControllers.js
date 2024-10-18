@@ -67,7 +67,31 @@ const authUser = asyncHandler(async(req,res)=>{
       }
 })
 
-module.exports = {registerUser, authUser};
+const allUsers = asyncHandler(async (req, res) => {
+    const keyword = req.query.search
+      ? {
+          $or: [
+            { name: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+          ],
+        }
+      : {};
+  
+    console.log('Keyword:', keyword);      // Debugging search term
+    console.log('User ID:', req.user._id); // Debugging logged-in user
+  
+    try {
+      const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+      res.send(users);
+    } catch (error) {
+      console.error('Error fetching users:', error); // Log errors
+      res.status(500).json({ message: 'Failed to fetch users' });
+    }
+  });
+  
+  
+
+module.exports = {registerUser, authUser, allUsers};
 
 //1. module.exports = { something }
 //This syntax is used to export an object containing one or more properties or functions. 

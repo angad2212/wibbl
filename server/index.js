@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const cors = require("cors");
 const connectDB = require('./config/db')
 const userRoutes = require('./routes/userRoutes')
+const chatRoutes = require('./routes/chatRoutes')
 
 // Load environment variables from .env file
 dotenv.config();
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server started on http://localhost:${PORT}`);
