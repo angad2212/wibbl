@@ -11,7 +11,7 @@ Wibbl is a type of application that simplifies [insert functionality like commun
   
 ## Technologies Used
 - **Frontend:** React.js, Tailwind CSS for a clean and responsive UI.
-- **Backend:** Node.js, Express.js for robust and scalable server management.
+- **Backend:** Node.js, Express.js for robust and scalable server management, Socket.io for real time communication.
 - **Database:** MongoDB for efficient storage and retrieval of user data.
 - **Authentication:** JWT (JSON Web Tokens) for secure authentication and session management.
 - **Cloud Storage:** AWS S3 / Google Cloud for reliable file storage and sharing.
