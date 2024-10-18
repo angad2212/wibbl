@@ -10,7 +10,8 @@ function App() {
       style={{
         minHeight: "100vh",
         display: "flex",
-        backgroundImage: "url('/download.jpeg')", // Using the correct path
+        backgroundImage: "url('/wibblBack.jpeg')", // Using the correct path
+        //the picture is placed in the public folder
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

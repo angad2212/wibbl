@@ -1,5 +1,7 @@
 import React, { useState } from 'react'; // Add useState from React
-import { VStack, FormControl, FormLabel, Input, InputGroup, InputRightElement, Button } from "@chakra-ui/react"; // Import necessary Chakra components
+import { VStack, FormControl, FormLabel, Input, InputGroup, InputRightElement, Button, useToast} from "@chakra-ui/react"; // Import necessary Chakra components
+import axios from 'axios'
+import {useNavigate} from 'react-router-dom'
 
 
 const Login = () => {
@@ -9,17 +11,60 @@ const Login = () => {
   const handleClick = () => setShow(!show);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [confirmpassword, setConfirmpassword] = useState("");
   const [password, setPassword] = useState("");
   const [pic, setPic] = useState("");
+  const toast = useToast();
+  const navigate = useNavigate();
 
-  const postDetails = (pics)=>{
 
-  }
+  const submitHandler = async () => {
+    if (!email || !password) {
+      toast({
+        title: 'Please Fill All The Fields',
+        status: 'warning',
+        duration: 5000,
+        isClosable: true,
+        position: 'bottom', 
+      });
+      return;
+    }
+  
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+      const { data } = await axios.post(
+        "http://localhost:3000/api/user/login",
+        {
+          email,
+          password,
+        },
+        config
+      );
+      //console.log(data);
+      toast({
+        title: "Login Successful",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      navigate("/chats"); // Updated navigation logic
+    } catch (error) {
+      toast({
+        title: "Error Occurred!",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+    }
+  };
 
-  const submitHandler = ()=>{
-    
-  }
 
   return (
     <VStack spacing="5px">

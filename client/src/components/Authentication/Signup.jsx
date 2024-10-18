@@ -1,5 +1,7 @@
 import React, { useState } from 'react'; // Add useState from React
-import { VStack, FormControl, FormLabel, Input, InputGroup, InputRightElement, Button } from "@chakra-ui/react"; // Import necessary Chakra components
+import { VStack, FormControl, FormLabel, Input, InputGroup, InputRightElement, Button, useToast } from "@chakra-ui/react"; // Import necessary Chakra components
+import axios from 'axios'
+import {useNavigate} from 'react-router-dom'
 
 const Signup = () => {
     // Add useState hooks for form input fields
@@ -11,14 +13,70 @@ const Signup = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [password, setPassword] = useState("");
     const [pic, setPic] = useState("");
+    const toast = useToast();
+    const navigate = useNavigate();
 
-    const postDetails = (pics)=>{
 
-    }
-
-    const submitHandler = async ()=>{
-      
-    }
+    const submitHandler = async () => {
+      if (!name || !email || !password || !confirmPassword) {
+        toast({
+          title: 'Please Fill All The Fields',
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+          position: 'bottom', // fixed typo: 'position' was misspelled as 'psoition'
+        });
+        return;
+      }
+    
+      if (password !== confirmPassword) {
+        toast({
+          title: 'Passwords do not match',
+          status: 'warning',
+          duration: 5000,
+          isClosable: true,
+          position: 'bottom', // fixed typo here too
+        });
+        return;
+      }
+    
+      try {
+        const config = {
+          headers: {
+            "Content-type": "application/json",
+          },
+        };
+        const { data } = await axios.post(
+          "http://localhost:3000/api/user",
+          {
+            name,
+            email,
+            password,
+            pic,
+          },
+          config
+        );
+        console.log(data);
+        toast({
+          title: "Registration Successful",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        localStorage.setItem("userInfo", JSON.stringify(data));
+        navigate("/chats"); // Updated navigation logic
+      } catch (error) {
+        toast({
+          title: "Error Occurred!",
+          description: error.response.data.message,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      }
+    };
 
     return (
       <VStack spacing="5px">
@@ -66,7 +124,7 @@ const Signup = () => {
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <FormControl>
+      {/* <FormControl>
         <FormLabel>Uplaod Your Picture</FormLabel>
         <Input
         type="file"
@@ -74,7 +132,7 @@ const Signup = () => {
         accept='image/*'
         onChange={(e)=>postDetails(e.target.files[0])} //the first image as input
          />
-      </FormControl>
+      </FormControl> */}
       <Button
         colorScheme="blue"
         width="100%"
