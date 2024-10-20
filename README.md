@@ -5,9 +5,8 @@ Wibbl is a type of application that simplifies [insert functionality like commun
 
 ## Features
 - **User Authentication:** Secure user login and registration system.
-- **Real-Time Updates:** Instant notifications and updates for better collaboration.
-- **File Management:** Upload, organize, and share files with ease.
-- **User-Friendly Interface:** Clean and intuitive design to enhance user experience.
+- **Real-Time Updates:** Instant updates for better collaboration.
+- **User-Friendly Interface:** Clean and simple design to enhance user experience.
   
 ## Technologies Used
 - **Frontend:** React.js, Tailwind CSS for a clean and responsive UI.
