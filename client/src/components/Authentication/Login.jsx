@@ -51,7 +51,8 @@ const Login = () => {
         isClosable: true,
         position: "bottom",
       });
-      localStorage.setItem("userInfo", JSON.stringify(data));
+      localStorage.setItem("userInfo", JSON.stringify(data)); //storing data on local disc
+      //this is for using further in the app
       navigate("/chats"); // Updated navigation logic
     } catch (error) {
       toast({
