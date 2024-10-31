@@ -1,4 +1,6 @@
-const fetchChats = async () => {
+import React, { useState } from 'react'; // If you're using React and hooks
+
+const fetchChats = async (setUsers, setLoading) => {
     const token = localStorage.getItem("token"); // Retrieve token from local storage
     const loggedInUser = JSON.parse(localStorage.getItem("userInfo")); // Get user info from local storage
 
