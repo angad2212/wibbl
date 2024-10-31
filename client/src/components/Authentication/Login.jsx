@@ -44,6 +44,9 @@ const Login = () => {
         config
       );
       //console.log(data);
+      // Assuming the token is returned in the response data
+      const { token } = data; // Make sure the token is part of the response
+
       toast({
         title: "Login Successful",
         status: "success",
@@ -52,6 +55,9 @@ const Login = () => {
         position: "bottom",
       });
       localStorage.setItem("userInfo", JSON.stringify(data)); //storing data on local disc
+      localStorage.setItem("token", token); // Store token
+      console.log('Stored Token:', localStorage.getItem("token")); // Check stored token
+
       //this is for using further in the app
       navigate("/chats"); // Updated navigation logic
     } catch (error) {

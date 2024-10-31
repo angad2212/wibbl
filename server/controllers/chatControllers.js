@@ -101,7 +101,7 @@ const accessChat = asyncHandler(async (req, res) => {
       // Populate sender info of the latest message
       const fullChats = await User.populate(chats, {
         path: "latestMessage.sender",
-        select: "name pic email", // Only include name, pic, and email
+        select: "name email", // Only include name and email
       });
   
       res.status(200).send(fullChats); // Send the chats to the user

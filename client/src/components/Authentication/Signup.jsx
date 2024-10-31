@@ -57,6 +57,10 @@ const Signup = () => {
           config
         );
         console.log(data);
+
+        // Assuming the token is returned in the response data
+        const { token } = data; // Make sure the token is part of the response
+
         toast({
           title: "Registration Successful",
           status: "success",
@@ -65,6 +69,7 @@ const Signup = () => {
           position: "bottom",
         });
         localStorage.setItem("userInfo", JSON.stringify(data));
+        localStorage.setItem("token", token); // Store token
         navigate("/chats"); // Updated navigation logic
       } catch (error) {
         toast({

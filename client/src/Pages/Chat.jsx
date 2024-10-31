@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import fetchChats from '../Functions/fetchChats'
 
 const ChatPage = () => {
   const [newMessage, setNewMessage] = useState('');
@@ -7,12 +7,14 @@ const ChatPage = () => {
   const [userName, setUserName] = useState(''); // State to store the user's name
   const [loading, setLoading] = useState(true); // Loading state
   const [messages, setMessages] = useState({}); // State for messages
+  const [users, setUsers] = useState([]);
+  //const [chatList, setChatList] = useState([]);
 
-  const users = [
-    { _id: '1', name: 'user1' },
-    { _id: '2', name: 'user2' },
-    { _id: '3', name: 'user3' }
-  ];
+  // const users = [
+  //   { _id: '1', name: 'user1' },
+  //   { _id: '2', name: 'user2' },
+  //   { _id: '3', name: 'user3' }
+  // ];
 
   useEffect(() => {
     // Retrieve user info from localStorage
@@ -22,19 +24,48 @@ const ChatPage = () => {
       setUserName(userInfo.name); // Set userName from stored data
     }
 
-    // Optionally, you can fetch users from the backend here
-    // Uncomment this block if needed
-    // const fetchUsers = async () => {
-    //   try {
-    //     const response = await axios.get('/api/users');
-    //     setUsers(response.data); // Set the fetched users
-    //   } catch (error) {
-    //     console.error("Failed to fetch users:", error);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-    // fetchUsers();
+    const fetchChats = async () => {
+      const token = localStorage.getItem("token"); // Retrieve token from local storage
+      const loggedInUser = JSON.parse(localStorage.getItem("userInfo")); // Get user info from local storage
+  
+      // Retrieve the logged-in user's ID from the user info
+      const excludedUserId = loggedInUser?._id || ''; // Accessing _id directly
+  
+      console.log('Logged In User ID:', excludedUserId); // Log the user ID for debugging
+  
+      const response = await fetch('http://localhost:3000/api/chat', {
+          method: 'GET',
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+          },
+      });
+  
+      if (response.ok) {
+          const data = await response.json();
+          const allUsers = [];
+  
+          data.forEach(chat => {
+              chat.users.forEach(user => {
+                  // Exclude the logged-in user dynamically
+                  if (user._id !== excludedUserId && !allUsers.find(u => u._id === user._id)) {
+                      allUsers.push(user); // Avoid duplicates
+                  }
+              });
+          });
+  
+          console.log('Filtered Users:', allUsers); // Log the filtered users for debugging
+          setUsers(allUsers); // Set the state with all unique users excluding the specified user
+          setLoading(false);
+      } else {
+          console.error('Failed to fetch chats:', response.status);
+          setLoading(false);
+      }
+  };
+  
+
+    fetchChats();
+
     
     setLoading(false); // Set loading to false after setting the username
   }, []); // Run only once on component mount
