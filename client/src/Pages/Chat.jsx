@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import fetchChats from '../Functions/fetchChats'
+import fetchChats from '../Functions/fetchChats';
 
 const ChatPage = () => {
   const [newMessage, setNewMessage] = useState('');
@@ -8,29 +8,48 @@ const ChatPage = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [messages, setMessages] = useState({}); // State for messages
   const [users, setUsers] = useState([]);
-  //const [chatList, setChatList] = useState([]);
-
-  // const users = [
-  //   { _id: '1', name: 'user1' },
-  //   { _id: '2', name: 'user2' },
-  //   { _id: '3', name: 'user3' }
-  // ];
+  const [searchTerm, setSearchTerm] = useState(''); // State for the search term
 
   useEffect(() => {
     // Retrieve user info from localStorage
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
     if (userInfo && userInfo.name) {
-        setUserName(userInfo.name); // Set userName from stored data
+      setUserName(userInfo.name); // Set userName from stored data
     }
 
     // Call fetchChats function and pass the state setters
     const getChats = async () => {
-        await fetchChats(setUsers, setLoading);
+      await fetchChats(setUsers, setLoading);
     };
 
     getChats();
-}, []); // Run only once on component mount
+  }, []); // Run only once on component mount
+
+  const searchUsers = async (term) => {
+    try {
+        let response;
+        // Check if there's a search term
+        if (term) {
+            // Fetch users based on the search term
+            response = await fetch(`/api/user?search=${term}`); // Your search API endpoint
+        } else {
+            // If the search term is empty, fetch all users
+            response = await fetch('/api/users'); // Adjust this to your endpoint for all users
+        }
+        
+        // Check if the response is ok (status code 200-299)
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        setUsers(data); // Update the users list with the filtered results
+    } catch (error) {
+        console.error('Error fetching users:', error);
+    }
+};
+
   const handleSendMessage = () => {
     if (newMessage.trim() === '' || !selectedUser) return; // Prevent sending empty messages
     const messageData = {
@@ -52,6 +71,11 @@ const ChatPage = () => {
     setSelectedUser(user); // Set the selected user
   };
 
+  // Filter users based on search term
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div style={{ width: '100%', height: '100vh', backgroundColor: '#121212', display: 'flex', flexDirection: 'column' }}>
       {/* Navbar */}
@@ -64,16 +88,34 @@ const ChatPage = () => {
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
         color: '#E0E0E0'
       }}>
-        <button onClick={() => console.log('Create Group Chat clicked')} style={{
-          padding: '10px',
-          border: 'none',
-          borderRadius: '4px',
-          backgroundColor: '#4CAF50',
-          color: 'white',
-          cursor: 'pointer'
-        }}>
-          Create Group Chat
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search User"
+            style={{
+              padding: '5px',
+              borderRadius: '4px',
+              border: '1px solid #4CAF50',
+              marginRight: '10px',
+              color: 'black',
+              backgroundColor: '#E0E0E0',
+              fontSize: '14px', // Smaller font size
+            }}
+          />
+          <button onClick={() => console.log('Create Group Chat clicked')} style={{
+            padding: '5px 10px', // Smaller button size
+            border: 'none',
+            borderRadius: '4px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            cursor: 'pointer',
+            fontSize: '14px' // Smaller font size
+          }}>
+            Create Group Chat
+          </button>
+        </div>
         <h1 style={{ fontSize: '30px', fontWeight: 'bold', margin: '0', flexGrow: 1, textAlign: 'center' }}>Wibbl</h1>
         <span style={{ color: '#E0E0E0', fontSize: '20px' }}>{userName}</span>
       </div>
@@ -95,8 +137,8 @@ const ChatPage = () => {
             {loading ? (
               <li style={{ color: '#E0E0E0' }}>Loading users...</li>
             ) : (
-              users.length > 0 ? (
-                users.map((user) => (
+              filteredUsers.length > 0 ? (
+                filteredUsers.map((user) => (
                   <li
                     key={user._id} // Use _id as the key
                     onClick={() => handleUserSelect(user)}
