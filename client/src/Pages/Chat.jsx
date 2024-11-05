@@ -28,47 +28,93 @@ const ChatPage = () => {
 
   const searchUsers = async (term) => {
     try {
-        let response;
-        // Check if there's a search term
-        if (term) {
-            // Fetch users based on the search term
-            response = await fetch(`/api/user?search=${term}`); // Your search API endpoint
-        } else {
-            // If the search term is empty, fetch all users
-            response = await fetch('/api/users'); // Adjust this to your endpoint for all users
-        }
-        
-        // Check if the response is ok (status code 200-299)
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
+      let response;
+      // Check if there's a search term
+      if (term) {
+        // Fetch users based on the search term
+        response = await fetch(`/api/user?search=${term}`); // Your search API endpoint
+      } else {
+        // If the search term is empty, fetch all users
+        response = await fetch('/api/users'); // Adjust this to your endpoint for all users
+      }
 
-        const data = await response.json();
-        setUsers(data); // Update the users list with the filtered results
+      // Check if the response is ok (status code 200-299)
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setUsers(data); // Update the users list with the filtered results
     } catch (error) {
-        console.error('Error fetching users:', error);
+      console.error('Error fetching users:', error);
     }
-};
+  };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === '' || !selectedUser) return; // Prevent sending empty messages
-    const messageData = {
-      content: newMessage,
-      sender: userName, // Use the user's name as sender
-      timestamp: new Date().toLocaleTimeString(),
-    };
-    
-    // Append the message to the selected user's chat
-    setMessages((prev) => ({
-      ...prev,
-      [selectedUser._id]: [...(prev[selectedUser._id] || []), messageData],
-    }));
-    
-    setNewMessage(''); // Clear the input after sending
+  // Function to get chat ID
+  const getChatId = async (loggedInUserId, selectedUserId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/chat/${loggedInUserId}/${selectedUserId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch chat ID');
+      }
+      const data = await response.json();
+      return data.chatId; // Assuming the response has chatId
+    } catch (error) {
+      console.error('Error fetching chat ID:', error);
+      return null;
+    }
+  };
+
+  // Function to handle sending messages
+  const handleSendMessage = async () => {
+    const loggedInUser = JSON.parse(localStorage.getItem("userInfo"));
+    const loggedInUserId = loggedInUser._id;
+
+    // Step 1: Get the chat ID
+    const chatId = await getChatId(loggedInUserId, selectedUser._id);
+
+    // Step 2: If a valid chat ID is retrieved, send the message
+    if (chatId) {
+      const response = await fetch('http://localhost:3000/api/message', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: newMessage, // Send the new message
+          chatId: chatId,
+        }),
+      });
+
+      if (response.ok) {
+        const message = await response.json();
+        console.log('Message sent successfully:', message);
+
+        // Add the new message to the local messages state
+        const newMsg = {
+          sender: userName,
+          content: newMessage,
+          timestamp: new Date().toLocaleTimeString(), // Set the timestamp
+        };
+        
+        setMessages((prevMessages) => ({
+          ...prevMessages,
+          [selectedUser._id]: [...(prevMessages[selectedUser._id] || []), newMsg],
+        }));
+
+        setNewMessage(''); // Clear the input after sending
+      } else {
+        console.error('Failed to send message:', response.status);
+      }
+    } else {
+      console.error('Chat ID could not be retrieved.');
+    }
   };
 
   const handleUserSelect = (user) => {
     setSelectedUser(user); // Set the selected user
+    localStorage.setItem('selectedUser', JSON.stringify(user)); // Store selected user in local storage
   };
 
   // Filter users based on search term
@@ -121,12 +167,12 @@ const ChatPage = () => {
       </div>
 
       <div style={{ flexGrow: 1, display: 'flex' }}>
-        <div 
-          className='user-list' 
-          style={{ 
-            backgroundColor: '#2B2B2B', 
-            width: '250px', 
-            height: '100%', 
+        <div
+          className='user-list'
+          style={{
+            backgroundColor: '#2B2B2B',
+            width: '250px',
+            height: '100%',
             padding: '20px',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
             overflowY: 'auto' // Allow scrolling if the list is long
@@ -161,45 +207,50 @@ const ChatPage = () => {
         </div>
         <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', padding: '20px', color: '#E0E0E0' }}>
           {/* Chat Interface */}
-          <h2>{selectedUser ? `Chat with ${selectedUser.name}` : 'Select a user to start chatting...'}</h2>
-          <div style={{ flexGrow: 1, marginBottom: '20px', borderRadius: '4px', padding: '10px', backgroundColor: '#222' }}>
-            {selectedUser && messages[selectedUser._id] && messages[selectedUser._id].map((msg, index) => (
-              <div key={index} style={{ margin: '5px 0' }}>
-                <strong style={{ color: '#4CAF50' }}>{msg.sender}:</strong> <span style={{ color: '#E0E0E0' }}>{msg.content}</span>
-                <div style={{ fontSize: '0.8em', color: 'gray' }}>{msg.timestamp}</div>
-              </div>
-            ))}
+          <h2>{selectedUser ? `Chat with ${selectedUser.name}` : 'Select a user to start chatting'}</h2>
+          <div style={{
+            flexGrow: 1,
+            backgroundColor: '#1E1E1E',
+            borderRadius: '4px',
+            padding: '10px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            overflowY: 'auto'
+          }}>
+            {selectedUser && messages[selectedUser._id] && messages[selectedUser._id].length > 0 ? (
+              messages[selectedUser._id].map((msg, index) => (
+                <div key={index} style={{ margin: '10px 0', color: '#E0E0E0' }}>
+                  <strong>{msg.sender}:</strong> {msg.content} <span style={{ fontSize: '12px', color: '#B0B0B0' }}>{msg.timestamp}</span>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: '#E0E0E0' }}>No messages yet.</p>
+            )}
           </div>
-          
-          {/* Show input only if a user is selected */}
           {selectedUser && (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex' }}>
               <input
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message..."
+                placeholder="Type your message..."
                 style={{
-                  flexGrow: 1,
                   padding: '10px',
                   borderRadius: '4px',
                   border: '1px solid #4CAF50',
+                  flexGrow: 1,
                   marginRight: '10px',
-                  color: 'black',
-                  backgroundColor: '#E0E0E0'
+                  backgroundColor: 'white', // Changed to white
+                  color: 'black' // Changed to black
                 }}
               />
-              <button 
-                onClick={handleSendMessage}
-                style={{
-                  padding: '10px 15px',
-                  backgroundColor: '#4CAF50',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
+              <button onClick={handleSendMessage} style={{
+                padding: '10px 20px',
+                border: 'none',
+                borderRadius: '4px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                cursor: 'pointer',
+              }}>
                 Send
               </button>
             </div>
