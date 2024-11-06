@@ -194,49 +194,67 @@ const ChatPage = () => {
             )}
           </ul>
         </div>
-        
+
         <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', padding: '20px', color: '#E0E0E0' }}>
           <h2>{selectedUser ? `Chat with ${selectedUser.name}` : 'Select a user to start chatting'}</h2>
           <div style={{
             flexGrow: 1, backgroundColor: '#1E1E1E', borderRadius: '4px',
             padding: '10px', overflowY: 'auto', marginBottom: '10px',
-            height: 'calc(100vh - 150px)', display: 'flex', flexDirection: 'column', 
-            position: 'relative', overflowY: 'scroll'
+            height: 'calc(100vh - 150px)', display: 'flex', flexDirection: 'column', position: 'relative', overflowY: 'scroll'
           }} ref={chatContainerRef}>
             {selectedUser && messages.length > 0 ? (
-              messages.map((msg, index) => (
-                <div key={index} style={{ margin: '10px 0' }}>
-                  <strong>{msg.sender}:</strong> {msg.content}
-                  {msg.timestamp && (
-                    <span style={{ fontSize: '12px', color: '#B0B0B0' }}>{msg.timestamp}</span>
-                  )}
-                </div>
-              ))
+              messages.map((msg, index) => {
+                const isLoggedInUser = msg.sender === userName;
+                return (
+                  <div key={index} style={{
+                    display: 'flex',
+                    flexDirection: isLoggedInUser ? 'row-reverse' : 'row', // Align messages based on sender
+                    marginBottom: '15px',
+                    alignItems: 'flex-end',
+                  }}>
+                    <div style={{ maxWidth: '70%', textAlign: isLoggedInUser ? 'right' : 'left' }}>
+                      {/* Display sender's name */}
+                      <div style={{ fontSize: '14px', fontWeight: 'bold', color: isLoggedInUser ? 'green' : '#E0E0E0' }}>
+                        {msg.sender}
+                      </div>
+                      {/* Display message content */}
+                      <div style={{
+                        fontSize: '16px', color: '#E0E0E0', backgroundColor: '#3A3A3A', padding: '10px', borderRadius: '8px', maxWidth: '100%',
+                        wordBreak: 'break-word'
+                      }}>
+                        {msg.content}
+                      </div>
+                      {/* Display timestamp */}
+                      <div style={{
+                        fontSize: '12px', color: '#A0A0A0', textAlign: 'right', marginTop: '5px',
+                      }}>
+                        {msg.timestamp}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
             ) : (
               <p style={{ color: '#E0E0E0' }}>No messages yet.</p>
             )}
           </div>
-
           {selectedUser && (
-            <div style={{
-              position: 'absolute', bottom: '10px', left: '20px', right: '20px',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-            }}>
-              <textarea
+            <div style={{ display: 'flex', marginTop: '10px' }}>
+              <input
+                type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type your message..."
                 style={{
-                  padding: '10px', width: '80%', borderRadius: '4px', resize: 'none',
-                  backgroundColor: '#E0E0E0', color: '#121212', fontSize: '14px',
-                  minHeight: '40px'
+                  flexGrow: 1, padding: '10px', borderRadius: '8px', backgroundColor: '#3A3A3A',
+                  color: '#E0E0E0', border: 'none', fontSize: '16px', minWidth: '300px'
                 }}
               />
               <button
                 onClick={handleSendMessage}
                 style={{
-                  padding: '10px 20px', borderRadius: '4px', backgroundColor: '#3A3A3A', color: '#E0E0E0',
-                  border: 'none', cursor: 'pointer', marginLeft: '10px'
+                  padding: '10px 20px', marginLeft: '10px', borderRadius: '8px',
+                  backgroundColor: '#4CAF50', color: '#fff', border: 'none', cursor: 'pointer'
                 }}
               >
                 Send
