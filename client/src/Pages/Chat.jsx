@@ -146,7 +146,7 @@ const ChatPage = () => {
   );
 
   return (
-    <div style={{ width: '100%', height: '100vh', backgroundColor: '#121212', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100vw', height: '100vh',backgroundColor: '#121212', display: 'flex', flexDirection: 'column' }}>
       <div style={{
         backgroundColor: '#1E1E1E',
         padding: '10px 20px',
@@ -155,6 +155,8 @@ const ChatPage = () => {
         justifyContent: 'space-between',
         color: '#E0E0E0'
       }}>
+      
+
         <input
           type="text"
           value={searchTerm}
@@ -164,12 +166,13 @@ const ChatPage = () => {
             padding: '5px', borderRadius: '4px', color: 'black',
             backgroundColor: '#E0E0E0', fontSize: '14px'
           }}
-        />
+          />
+        
         <h1 style={{ fontSize: '30px', fontWeight: 'bold', margin: '0', flexGrow: 1, textAlign: 'center' }}>Wibbl</h1>
         <span style={{ color: '#E0E0E0', fontSize: '20px' }}>{userName}</span>
       </div>
 
-      <div style={{ flexGrow: 1, display: 'flex' }}>
+      <div style={{ flexGrow: 1, height:"100vh" , overflow:"hidden", display: 'flex' }}>
         <div className='user-list' style={{
           backgroundColor: '#2B2B2B', width: '250px', height: '100%',
           padding: '20px', overflowY: 'auto'
