@@ -13,7 +13,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    if (userInfo && userInfo.name) setUserName(userInfo.name); // Set userName from stored data
+    if (userInfo && userInfo.name) setUserName(userInfo.name); //Set userName from stored data
 
     const getChats = async () => {
       await fetchChats(setUsers, setLoading);
