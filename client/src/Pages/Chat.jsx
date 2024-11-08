@@ -175,7 +175,7 @@ const ChatPage = () => {
       <div style={{ flexGrow: 1, height:"100vh" , overflow:"hidden", display: 'flex' }}>
         <div className='user-list' style={{
           backgroundColor: '#2B2B2B', width: '250px', height: '100%',
-          padding: '20px', overflowY: 'auto'
+          padding: '20px'
         }}>
           <h2 style={{ color: '#E0E0E0' }}>User List</h2>
           <ul style={{ listStyleType: 'none', padding: '0' }}>
