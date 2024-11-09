@@ -13,12 +13,14 @@ RUN npm install
 # Copy the rest of the application code into the container
 COPY . .
 
+# Copy the .env file into the container
+COPY .env .env
+
 # Expose the port that your backend server runs on
-EXPOSE 5001
+EXPOSE 3000
 
 # Start the backend server
 CMD ["node", "index.js"]
-
 
 #after making changes:
     #remove the running container:
