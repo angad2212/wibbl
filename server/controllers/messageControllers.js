@@ -56,4 +56,4 @@ const allMessages = asyncHandler(async(req,res)=>{
       }
 })
 
-module.exports = {sendMessage, allMessages}
+module.exports = {sendMessage, allMessages} //export
