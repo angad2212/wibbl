@@ -1,69 +1,89 @@
-const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
 const request = require('supertest');
-const app = require('../index'); // Your Express app
+const express = require('express');
+const bodyParser = require('body-parser');
+const { registerUser } = require('../controllers/userControllers'); // Adjust path as needed
 
-let mongoServer;
+// Mock User Model & Token Generator
+jest.mock('../models/userModel', () => ({
+    findOne: jest.fn(),
+    create: jest.fn()
+}));
+jest.mock('../config/generateToken', () => jest.fn(() => 'mocked-token'));
 
-beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    const uri = mongoServer.getUri();
+const User = require('../models/userModel');
+const generateToken = require('../config/generateToken');
 
-    await mongoose.connect(uri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
-});
-
-afterEach(async () => {
-    // Clear collections after each test
-    const collections = mongoose.connection.collections;
-    for (const key in collections) {
-        await collections[key].deleteMany();
-    }
-});
-
-afterAll(async () => {
-    await mongoose.disconnect(); // Disconnect mongoose
-    await mongoServer.stop();    // Stop in-memory MongoDB
-});
+// Express App Setup
+const app = express();
+app.use(bodyParser.json());
+app.post('/api/user/', registerUser);
 
 describe('POST /api/user/', () => {
-    it('should register a new user and return full user data', async () => {
-        const res = await request(app)
-            .post('/api/user/')
-            .send({
-                name: 'John Doe',
-                email: 'john@example.com',
-                password: 'password123',
-            });
 
-        expect(res.statusCode).toBe(201);
-        expect(res.body).toHaveProperty('name', 'John Doe');
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
 
     it('should return 400 if required fields are missing', async () => {
-        const res = await request(app).post('/api/user/').send({
-            name: '',
-            email: '',
-        });
-
-        expect(res.statusCode).toBe(400);
-    });
+      const res = await request(app).post('/api/user/').send({
+          email: 'advait@gmail.com',
+          password: 'advait'
+      });
+  
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toBe('please enter all the details');
+  });
+  
 
     it('should return 400 if user already exists', async () => {
-        await request(app).post('/api/user/').send({
-            name: 'John Doe',
-            email: 'john@example.com',
-            password: 'password123',
-        });
+        User.findOne.mockResolvedValue({ email: 'test@example.com' });
 
         const res = await request(app).post('/api/user/').send({
             name: 'John Doe',
-            email: 'john@example.com',
+            email: 'test@example.com',
+            password: 'password123'
+        });
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe('user already exists');
+    });
+
+    it('should create a user and return 201 with user data', async () => {
+      User.findOne.mockResolvedValue(null); // No existing user
+      User.create.mockResolvedValue({
+          _id: '67b9e918a0817ef010ed83dc',
+          name: 'advait',
+          email: 'advait@123',
+          pic: 'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg'
+      });
+  
+      const res = await request(app).post('/api/user/').send({
+          name: 'advait',
+          email: 'advait@123',
+          password: 'advait'
+      });
+  
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toEqual({
+          _id: '67b9e918a0817ef010ed83dc',
+          name: 'advait',
+          email: 'advait@123',
+          pic: 'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg',
+          token: 'mocked-token'  
+        });
+  });
+
+    it('should return 400 if user creation fails', async () => {
+        User.findOne.mockResolvedValue(null);
+        User.create.mockResolvedValue(null);
+
+        const res = await request(app).post('/api/user/').send({
+            name: 'John Doe',
+            email: 'test@example.com',
             password: 'password123',
         });
 
         expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe('error creating user');
     });
 });
