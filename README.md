@@ -14,6 +14,7 @@ Wibbl is a type of application that simplifies [insert functionality like commun
 - **Database:** MongoDB for efficient storage and retrieval of user data.
 - **Authentication:** JWT (JSON Web Tokens) for secure authentication and session management.
 - **Deployment:** Docker for containerization.
+- **Testing:** Jest for Server testing.
 
 ## Data Flow Diagram
 <img width="968" alt="dfd_wibbl" src="https://github.com/user-attachments/assets/4ffe7443-f003-4398-a314-e256e6e115cb">
